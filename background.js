@@ -50,16 +50,26 @@ async function setupInitialCORSRules() {
 }
 
 // popup.jsからのメッセージを受信してCORSルールを更新
-chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  console.log('Received message:', message);
+  
   if (message.action === 'updateCORSRules') {
-    try {
-      await updateCORSRules(message.host);
-      sendResponse({ success: true });
-    } catch (error) {
-      console.error('Failed to update CORS rules:', error);
-      sendResponse({ success: false, error: error.message });
-    }
+    // 非同期処理を実行し、即座にレスポンスを返す
+    updateCORSRules(message.host)
+      .then(() => {
+        console.log('CORS rules updated successfully');
+      })
+      .catch((error) => {
+        console.error('Failed to update CORS rules:', error);
+      });
+    
+    // 即座に成功レスポンスを返す（実際の処理は非同期で継続）
+    sendResponse({ success: true });
+    return false; // 同期レスポンス
   }
+  
+  // 未知のアクションの場合
+  return false;
 });
 
 async function updateCORSRules(hostUrl) {

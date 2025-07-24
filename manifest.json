@@ -32,7 +32,7 @@
     "service_worker": "background.js"
   },
   "web_accessible_resources": [{
-    "resources": ["index.html", "locale.js"],
+    "resources": ["index.html", "locale.js", "llm_api.js", "popup.js", "template.html", "template.js"],
     "matches": ["<all_urls>"]
   }],
   "content_security_policy": {

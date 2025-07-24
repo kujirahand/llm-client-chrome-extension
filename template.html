@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>プロンプトテンプレート管理</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 30px;
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .form-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            background-color: #fafafa;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+        }
+        
+        .labels-input {
+            background-color: #f8f9fa;
+        }
+        
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-right: 10px;
+        }
+        
+        button:hover {
+            background-color: #0056b3;
+        }
+        
+        .btn-danger {
+            background-color: #dc3545;
+        }
+        
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+        
+        .btn-success {
+            background-color: #28a745;
+        }
+        
+        .btn-success:hover {
+            background-color: #218838;
+        }
+        
+        .templates-list {
+            margin-top: 30px;
+        }
+        
+        .template-item {
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            padding: 15px;
+            background-color: white;
+        }
+        
+        .template-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .template-title {
+            font-weight: bold;
+            font-size: 16px;
+            color: #333;
+        }
+        
+        .template-labels {
+            margin: 8px 0;
+        }
+        
+        .label-tag {
+            display: inline-block;
+            background-color: #e9ecef;
+            color: #495057;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            margin-right: 5px;
+        }
+        
+        .template-body {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 13px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+        
+        .template-actions {
+            margin-top: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .btn-copy {
+            padding: 6px 12px;
+            font-size: 12px;
+            background-color: #6c757d;
+            margin-left: auto;
+        }
+        
+        .btn-copy:hover {
+            background-color: #545b62;
+        }
+        
+        .message {
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            display: none;
+        }
+        
+        .message.success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        
+        .message.error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        
+        .help-text {
+            font-size: 12px;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>プロンプトテンプレート管理</h1>
+        
+        <div id="message" class="message"></div>
+        
+        <div class="form-section">
+            <h2>新しいテンプレートを追加</h2>
+            <form id="templateForm">
+                <div class="form-group">
+                    <label for="title">タイトル:</label>
+                    <input type="text" id="title" name="title" required placeholder="テンプレートの名前を入力">
+                </div>
+                
+                <div class="form-group">
+                    <label for="body">プロンプト内容:</label>
+                    <textarea id="body" name="body" required placeholder="システムプロンプトの内容を入力してください..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="labels">ラベル:</label>
+                    <input type="text" id="labels" name="labels" class="labels-input" placeholder="カンマ区切りでラベルを入力 (例: 翻訳, ビジネス, 技術)">
+                    <div class="help-text">複数のラベルはカンマで区切って入力してください</div>
+                </div>
+                
+                <button type="submit" class="btn-success">テンプレートを保存</button>
+                <button type="button" id="clearForm">フォームをクリア</button>
+            </form>
+        </div>
+        
+        <div class="templates-list">
+            <h2>保存済みテンプレート</h2>
+            <div id="templatesList"></div>
+        </div>
+    </div>
+    
+    <script src="template.js"></script>
+</body>
+</html>

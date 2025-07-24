@@ -184,6 +184,7 @@
   <div class="header">
     <h2 data-locale="app_title">🦙 Ollama Chat</h2>
     <div class="header-buttons">
+      <button id="templateButton" class="settings-btn" data-locale="tooltip_templates" data-locale-attr="title" title="テンプレート管理">📋</button>
       <button id="clearButton" class="settings-btn" data-locale="clear_chat" data-locale-attr="title" title="Clear chat history">📝</button>
       <button id="openWindowButton" class="settings-btn" data-locale="tooltip_window" data-locale-attr="title" title="Open in new window">🗗</button>
       <button id="settingsButton" class="settings-btn" data-locale="tooltip_settings" data-locale-attr="title" title="Settings">⚙️</button>
@@ -201,6 +202,12 @@
         <option value="gemma3:4b">gemma3:4b</option>
       </select>
       <button id="refreshModels" class="small-btn" data-locale="tooltip_refresh_models" data-locale-attr="title" title="Refresh model list">↻</button>
+    </div>
+    <div class="setting-group">
+      <label for="templateSelect" data-locale="template_select">テンプレート選択:</label>
+      <select id="templateSelect">
+        <option value="" data-locale="template_select_placeholder">-- テンプレートを選択 --</option>
+      </select>
     </div>
     <div class="setting-group">
       <label for="systemPromptInput" data-locale="system_prompt">System Prompt:</label>

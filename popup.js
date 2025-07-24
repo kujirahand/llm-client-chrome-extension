@@ -9,9 +9,16 @@ class OllamaChat {
     this.llmApi = new LLMApi();
     this.llmApi.loadSettings();
     
+    // 既存の初期メッセージに data-original-content 属性を追加
+    this.initializeExistingMessages();
+    
     this.initializeEventListeners();
     this.loadChatHistory();
-    this.llmApi.setupCORSRules();
+    
+    // CORSルールセットアップを非ブロッキングで実行
+    this.llmApi.setupCORSRules().catch(error => {
+      console.warn('CORS setup warning (continuing anyway):', error);
+    });
     
     // 言語設定を初期化
     this.initializeLocale();
@@ -20,6 +27,16 @@ class OllamaChat {
     setTimeout(() => {
       this.messageInput.focus();
     }, 100);
+  }
+  
+  initializeExistingMessages() {
+    // HTML内の既存メッセージに data-original-content 属性を追加
+    const existingMessages = this.chatContainer.querySelectorAll('.message');
+    existingMessages.forEach(msg => {
+      if (!msg.getAttribute('data-original-content')) {
+        msg.setAttribute('data-original-content', msg.textContent);
+      }
+    });
   }
   
   async initializeLocale() {
@@ -81,11 +98,22 @@ class OllamaChat {
     if (openWindowButton) {
       openWindowButton.addEventListener('click', () => this.openInWindow());
     }
+
+    const templateButton = document.getElementById('templateButton');
+    if (templateButton) {
+      templateButton.addEventListener('click', () => this.openTemplateManager());
+    }
     
     // 言語選択のイベントリスナー
     const languageSelect = document.getElementById('languageSelect');
     if (languageSelect) {
       languageSelect.addEventListener('change', (e) => this.changeLanguage(e.target.value));
+    }
+
+    // テンプレート選択のイベントリスナー
+    const templateSelect = document.getElementById('templateSelect');
+    if (templateSelect) {
+      templateSelect.addEventListener('change', (e) => this.applyTemplate(e.target.value));
     }
     
     // オーバーレイをクリックしたときに設定パネルを閉じる
@@ -114,6 +142,11 @@ class OllamaChat {
       
       if (overlay) {
         overlay.style.display = isVisible ? 'none' : 'block';
+      }
+      
+      // 設定パネルを開く際にテンプレート一覧を更新
+      if (!isVisible) {
+        this.loadTemplateOptions();
       }
     }
   }
@@ -151,6 +184,9 @@ class OllamaChat {
       languageSelect.value = locale.getCurrentLanguage();
     }
     
+    // テンプレート一覧を読み込み
+    this.loadTemplateOptions();
+    
     this.refreshModels();
   }
   
@@ -164,7 +200,10 @@ class OllamaChat {
     const initialMessages = this.chatContainer.querySelectorAll('.bot-message[data-locale="initial_message"]');
     initialMessages.forEach(msg => {
       if (typeof locale !== 'undefined') {
-        msg.textContent = locale.t('initial_message');
+        const messageText = locale.t('initial_message');
+        msg.textContent = messageText;
+        // 元のプレーンテキストを data 属性として保存（改行情報を保持するため）
+        msg.setAttribute('data-original-content', messageText);
       }
     });
   }
@@ -232,6 +271,8 @@ class OllamaChat {
       initialMessage.setAttribute('data-locale', 'initial_message');
       const messageText = typeof locale !== 'undefined' ? locale.t('initial_message') : 'こんにちは！何でもお聞きください。';
       initialMessage.textContent = messageText;
+      // 元のプレーンテキストを data 属性として保存（改行情報を保持するため）
+      initialMessage.setAttribute('data-original-content', messageText);
       this.chatContainer.appendChild(initialMessage);
       
       // ローカルストレージからチャット履歴を削除
@@ -278,6 +319,8 @@ class OllamaChat {
           // チャンクを受信したときの処理
           const htmlContent = this.llmApi.formatTextWithLineBreaks(fullResponse);
           botMessageDiv.innerHTML = htmlContent;
+          // 元のプレーンテキストを data 属性として保存（改行情報を保持するため）
+          botMessageDiv.setAttribute('data-original-content', fullResponse);
           this.chatContainer.scrollTop = this.chatContainer.scrollHeight;
         },
         (fullResponse) => {
@@ -323,6 +366,9 @@ class OllamaChat {
       messageDiv.innerHTML = htmlContent;
     }
     
+    // 元のプレーンテキストを data 属性として保存（改行情報を保持するため）
+    messageDiv.setAttribute('data-original-content', content);
+    
     this.chatContainer.appendChild(messageDiv);
     this.chatContainer.scrollTop = this.chatContainer.scrollHeight;
     
@@ -353,7 +399,7 @@ class OllamaChat {
   
   saveChatHistory() {
     const messages = Array.from(this.chatContainer.children).map(msg => ({
-      content: msg.textContent,
+      content: msg.getAttribute('data-original-content') || msg.textContent,
       type: msg.className.includes('user-message') ? 'user' : 
             msg.className.includes('error') ? 'error' : 'bot'
     }));
@@ -395,8 +441,64 @@ class OllamaChat {
       messageDiv.innerHTML = htmlContent;
     }
     
+    // 元のプレーンテキストを data 属性として保存（改行情報を保持するため）
+    messageDiv.setAttribute('data-original-content', content);
+    
     this.chatContainer.appendChild(messageDiv);
     this.chatContainer.scrollTop = this.chatContainer.scrollHeight;
+  }
+
+  openTemplateManager() {
+    // 新しいタブでtemplate.htmlを開く
+    chrome.tabs.create({
+      url: chrome.runtime.getURL('template.html')
+    });
+  }
+
+  // テンプレート一覧を選択ボックスに読み込み
+  loadTemplateOptions() {
+    const templateSelect = document.getElementById('templateSelect');
+    if (!templateSelect) return;
+
+    try {
+      const templates = JSON.parse(localStorage.getItem('prompt_templates') || '[]');
+      
+      // 既存のオプションをクリア（最初のデフォルトオプション以外）
+      const placeholderText = typeof locale !== 'undefined' ? locale.t('template_select_placeholder') : '-- テンプレートを選択 --';
+      templateSelect.innerHTML = `<option value="">${placeholderText}</option>`;
+      
+      // テンプレートをオプションとして追加
+      templates.forEach(template => {
+        const option = document.createElement('option');
+        option.value = template.id;
+        option.textContent = template.title;
+        templateSelect.appendChild(option);
+      });
+    } catch (error) {
+      console.error('テンプレート読み込みエラー:', error);
+    }
+  }
+
+  // 選択されたテンプレートを適用
+  applyTemplate(templateId) {
+    if (!templateId) return;
+
+    try {
+      const templates = JSON.parse(localStorage.getItem('prompt_templates') || '[]');
+      const template = templates.find(t => t.id == templateId);
+      
+      if (template) {
+        const systemPromptInput = document.getElementById('systemPromptInput');
+        if (systemPromptInput) {
+          systemPromptInput.value = template.body;
+          // システムプロンプトを自動保存
+          this.llmApi.systemPrompt = template.body;
+          this.llmApi.saveSettings();
+        }
+      }
+    } catch (error) {
+      console.error('テンプレート適用エラー:', error);
+    }
   }
 }
 

@@ -15,17 +15,31 @@ class LLMApi {
   
   // CORSルールのセットアップ
   async setupCORSRules() {
+    // CORSセットアップは必須ではないため、エラーが発生しても続行
     try {
-      const response = await chrome.runtime.sendMessage({
-        action: 'updateCORSRules',
-        host: this.ollamaUrl
-      });
-      
-      if (!response.success) {
-        console.error('CORS rules update failed:', response.error);
+      // chrome.runtime.sendMessageが利用可能かチェック
+      if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.sendMessage) {
+        console.log('Attempting to setup CORS rules...');
+        
+        // シンプルな同期的アプローチを試行
+        chrome.runtime.sendMessage({
+          action: 'updateCORSRules',
+          host: this.ollamaUrl
+        }, (response) => {
+          if (chrome.runtime.lastError) {
+            console.warn('CORS setup warning (non-fatal):', chrome.runtime.lastError.message);
+          } else if (response && response.success) {
+            console.log('CORS rules setup successfully');
+          } else {
+            console.warn('CORS setup completed with unknown status');
+          }
+        });
+      } else {
+        console.log('Chrome runtime not available, skipping CORS setup');
       }
     } catch (error) {
-      console.error('CORS rules setup failed:', error);
+      // CORSセットアップの失敗は致命的ではない
+      console.warn('CORS rules setup failed (non-fatal):', error.message);
     }
   }
   
@@ -161,7 +175,7 @@ class LLMApi {
     onComplete(fullResponse);
   }
   
-  // テキストをHTMLエスケープして改行を<br>タグに変換
+  // テキストをHTMLエスケープして改行を<br>タグに変換、**テキスト**を強調表示に変換
   formatTextWithLineBreaks(text) {
     return text
       .replace(/&/g, '&amp;')
@@ -169,6 +183,7 @@ class LLMApi {
       .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;')
       .replace(/'/g, '&#39;')
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') // **テキスト**を<strong>テキスト</strong>に変換
       .replace(/\n/g, '<br>');
   }
 }

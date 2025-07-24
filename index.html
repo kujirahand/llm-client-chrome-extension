@@ -273,6 +273,7 @@
   <div class="header">
     <h1 data-locale="app_title">🦙 Ollama Chat</h1>
     <div class="header-buttons">
+      <button id="templateButton" class="btn" data-locale="templates">📋 テンプレート</button>
       <button id="settingsButton" class="btn" data-locale="settings">⚙️ Settings</button>
       <button id="clearButton" class="btn" data-locale="clear_chat">📝 Clear Chat</button>
     </div>
@@ -316,6 +317,13 @@
         </select>
         <button id="refreshModels" class="small-btn" data-locale="tooltip_refresh_models" data-locale-attr="title" title="Refresh model list">↻</button>
       </div>
+    </div>
+    
+    <div class="setting-group">
+      <label for="templateSelect" data-locale="template_select">テンプレート選択:</label>
+      <select id="templateSelect">
+        <option value="" data-locale="template_select_placeholder">-- テンプレートを選択 --</option>
+      </select>
     </div>
     
     <div class="setting-group">
