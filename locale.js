@@ -36,6 +36,8 @@ class Locale {
         
         // 確認メッセージ
         'clear_chat_confirm': 'チャット履歴をクリアしますか？',
+        'clear_all_logs_confirm': 'すべてのチャットログを削除しますか？この操作は元に戻せません。',
+        'delete_selected_log_confirm': 'このチャットログを削除しますか？この操作は元に戻せません。',
         
         // エラーメッセージ
         'error_send_message': 'メッセージの送信に失敗しました',
@@ -62,17 +64,31 @@ class Locale {
         'log_json_parse_error': 'JSON解析エラー',
         'log_json_parse_error_partial': 'JSON解析エラー（部分行）',
         
-        // ツールチップ
+                // Tooltips
         'tooltip_clear': 'チャット履歴をクリア',
         'tooltip_window': '新しいウィンドウで開く',
         'tooltip_settings': '設定',
         'tooltip_templates': 'テンプレート管理',
+        'tooltip_logs': 'チャットログ',
         'tooltip_refresh_models': 'モデル一覧を更新',
         
         // テンプレート
+                // Templates
         'templates': 'テンプレート',
         'template_select': 'テンプレート選択:',
         'template_select_placeholder': '-- テンプレートを選択 --',
+        
+        // Chat Logs
+        'logs': 'ログ',
+        'chat_logs': 'チャットログ',
+        'chat_history_list': 'チャット履歴一覧',
+        'back_to_chat': 'チャットに戻る',
+        'clear_all_logs': '全削除',
+        'delete_selected_log': '削除',
+        'continue_chat': '会話を続ける',
+        'no_chat_logs': 'チャットログがありません',
+        'select_chat_to_view': 'チャットを選択してください',
+        'select_chat_from_left': '左側からチャットを選択してください',
         
         // アクセシビリティ
         'aria_chat_container': 'チャットメッセージ一覧',
@@ -109,7 +125,10 @@ class Locale {
         'thinking': 'Thinking...',
         
         // Confirmation messages
-        'clear_chat_confirm': 'Are you sure you want to clear the chat history?',
+                // Confirmation messages
+        'clear_chat_confirm': 'Clear chat history?',
+        'clear_all_logs_confirm': 'Delete all chat logs? This action cannot be undone.',
+        'delete_selected_log_confirm': 'Delete this chat log? This action cannot be undone.',
         
         // Error messages
         'error_send_message': 'Failed to send message',
@@ -141,12 +160,25 @@ class Locale {
         'tooltip_window': 'Open in new window',
         'tooltip_settings': 'Settings',
         'tooltip_templates': 'Template Manager',
+        'tooltip_logs': 'Chat Logs',
         'tooltip_refresh_models': 'Refresh model list',
         
         // Templates
         'templates': 'Templates',
         'template_select': 'Template Selection:',
         'template_select_placeholder': '-- Select Template --',
+        
+        // Chat Logs
+        'logs': 'Logs',
+        'chat_logs': 'Chat Logs',
+        'chat_history_list': 'Chat History List',
+        'back_to_chat': 'Back to Chat',
+        'clear_all_logs': 'Clear All',
+        'delete_selected_log': 'Delete',
+        'continue_chat': 'Continue Chat',
+        'no_chat_logs': 'No chat logs available',
+        'select_chat_to_view': 'Select a chat to view',
+        'select_chat_from_left': 'Please select a chat from the left',
         
         // Accessibility
         'aria_chat_container': 'Chat messages list',

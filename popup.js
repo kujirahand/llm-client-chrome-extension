@@ -9,6 +9,9 @@ class OllamaChat {
     this.llmApi = new LLMApi();
     this.llmApi.loadSettings();
     
+    // ログ関連の定数
+    this.MAX_LOGS = 100; // 最大ログ数
+    
     // 既存の初期メッセージに data-original-content 属性を追加
     this.initializeExistingMessages();
     
@@ -102,6 +105,11 @@ class OllamaChat {
     const templateButton = document.getElementById('templateButton');
     if (templateButton) {
       templateButton.addEventListener('click', () => this.openTemplateManager());
+    }
+
+    const logsButton = document.getElementById('logsButton');
+    if (logsButton) {
+      logsButton.addEventListener('click', () => this.openLogsManager());
     }
     
     // 言語選択のイベントリスナー
@@ -326,6 +334,8 @@ class OllamaChat {
         (fullResponse) => {
           // 完了時の処理
           this.saveChatHistory();
+          // チャットログを保存（複数のメッセージがある場合のみ）
+          this.saveChatLog();
         },
         (error) => {
           // エラー時の処理
@@ -453,6 +463,83 @@ class OllamaChat {
     chrome.tabs.create({
       url: chrome.runtime.getURL('template.html')
     });
+  }
+
+  openLogsManager() {
+    // 新しいタブでlogs.htmlを開く
+    chrome.tabs.create({
+      url: chrome.runtime.getURL('logs.html')
+    });
+  }
+
+  // チャットログを保存する機能
+  async saveChatLog() {
+    try {
+      // 現在のチャット履歴を取得
+      const messages = Array.from(this.chatContainer.children)
+        .filter(msg => !msg.classList.contains('loading')) // ローディング要素を除外
+        .map(msg => ({
+          content: msg.getAttribute('data-original-content') || msg.textContent,
+          type: msg.className.includes('user-message') ? 'user' : 
+                msg.className.includes('error') ? 'error' : 'bot'
+        }))
+        .filter(msg => {
+          // 初期メッセージを除外
+          const initialMessages = [
+            'こんにちは！何でもお聞きください。',
+            'Hello! Feel free to ask me anything.'
+          ];
+          return !initialMessages.includes(msg.content);
+        });
+
+      // ユーザーメッセージが2つ以上ある場合のみログを保存
+      const userMessages = messages.filter(msg => msg.type === 'user');
+      if (userMessages.length >= 1 && messages.length >= 2) {
+        await this.saveNewChatLog(messages);
+      }
+    } catch (error) {
+      console.error('Error saving chat log:', error);
+    }
+  }
+
+  // 新しいチャットログを保存
+  async saveNewChatLog(messages) {
+    try {
+      // 最初のユーザーメッセージをタイトルとして使用（50文字まで）
+      const firstUserMessage = messages.find(msg => msg.type === 'user');
+      if (!firstUserMessage) return; // ユーザーメッセージがない場合は保存しない
+      
+      const title = firstUserMessage.content.length > 50 ? 
+        firstUserMessage.content.substring(0, 50) + '...' : 
+        firstUserMessage.content;
+      
+      const logId = Date.now().toString();
+      const newLog = {
+        id: logId,
+        title: title,
+        messages: messages,
+        createdAt: new Date().toISOString()
+      };
+      
+      // 既存のログを取得
+      const result = await chrome.storage.local.get(['chatLogs']);
+      let logs = result.chatLogs || [];
+      
+      // 新しいログを先頭に追加
+      logs.unshift(newLog);
+      
+      // 最大ログ数を超えた場合、古いものを削除
+      if (logs.length > this.MAX_LOGS) {
+        logs = logs.slice(0, this.MAX_LOGS);
+      }
+      
+      // ストレージに保存
+      await chrome.storage.local.set({ chatLogs: logs });
+      
+      console.log('New chat log saved:', logId);
+    } catch (error) {
+      console.error('Error saving chat log:', error);
+    }
   }
 
   // テンプレート一覧を選択ボックスに読み込み
