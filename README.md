@@ -7,6 +7,7 @@ A Chrome extension that allows you to chat with Ollama API directly from your br
 - Direct communication with Ollama API
 - **Streaming responses**: Real-time text display
 - **Settings panel**: Configure host, model, and system prompt
+- **Template management**: Create, save, and reuse system prompt templates
 - **Automatic CORS handling**: Resolves connection issues using Chrome extension permissions
 - Simple chat interface
 - Chat history preservation
@@ -50,7 +51,25 @@ OLLAMA_ORIGINS=chrome-extension://* ollama serve
 - **Ollama Host**: Address of the Ollama server
 - **Model**: Model to use (automatically retrieved)
 - **System Prompt**: Configure AI personality or role
+- **Template Selection**: Choose from saved prompt templates
 - **Language**: Choose between Japanese and English
+
+### Template Management
+
+The extension includes a comprehensive template management system:
+
+- **Create Templates**: Save frequently used system prompts as templates
+- **Template Library**: Access saved templates from both popup and full window views
+- **Quick Application**: Apply templates directly to system prompt with one click
+- **Template Manager**: Dedicated interface (`📋 Templates` button) for managing templates
+  - Add new templates with title, content, and labels
+  - Edit existing templates
+  - Delete unwanted templates
+  - Copy template content to clipboard
+
+To access template management:
+1. Click the `📋 Templates` button in the header
+2. Or use the template dropdown in settings to quickly apply saved templates
 
 ## Multilingual Support
 
@@ -69,6 +88,8 @@ For more details, see [LOCALE_USAGE.md](LOCALE_USAGE.md).
 ├── popup.html             # Popup interface
 ├── popup.js               # Popup functionality
 ├── index.html             # Full window interface
+├── template.html          # Template management interface
+├── template.js            # Template management functionality
 ├── background.js          # Background service worker
 ├── llm_api.js             # Ollama API client
 ├── locale.js              # Internationalization

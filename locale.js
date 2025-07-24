@@ -42,8 +42,25 @@ class Locale {
         'error_load_models': 'モデルの読み込みに失敗しました',
         'error_connection': '接続エラーが発生しました',
         'error_invalid_response': '無効なレスポンスです',
+        'error_ollama_connection': 'Ollamaサーバーに接続できません。サーバーが起動していることとCORS設定を確認してください。',
         'settings_saved': '設定が保存されました',
         'settings_load_error': '設定の読み込みに失敗しました',
+        
+        // ログメッセージ
+        'log_attempting_cors_setup': 'CORSルールのセットアップを試行中...',
+        'log_cors_setup_success': 'CORSルールが正常にセットアップされました',
+        'log_cors_setup_unknown': 'CORSセットアップが不明な状態で完了しました',
+        'log_chrome_runtime_not_available': 'Chrome runtimeが利用できません。CORSセットアップをスキップします',
+        'log_cors_setup_warning': 'CORSセットアップの警告（致命的ではありません）',
+        'log_cors_setup_failed': 'CORSルールのセットアップに失敗しました（致命的ではありません）',
+        'log_sending_request': 'リクエストを送信中',
+        'log_request_data': 'リクエストデータ',
+        'log_response_status': 'レスポンスステータス',
+        'log_response_headers': 'レスポンスヘッダー',
+        'log_error_response': 'エラーレスポンス',
+        'log_fetch_error': 'フェッチエラー',
+        'log_json_parse_error': 'JSON解析エラー',
+        'log_json_parse_error_partial': 'JSON解析エラー（部分行）',
         
         // ツールチップ
         'tooltip_clear': 'チャット履歴をクリア',
@@ -99,8 +116,25 @@ class Locale {
         'error_load_models': 'Failed to load models',
         'error_connection': 'Connection error occurred',
         'error_invalid_response': 'Invalid response',
+        'error_ollama_connection': 'Unable to connect to Ollama server. Please check if the server is running and CORS settings are configured.',
         'settings_saved': 'Settings saved',
         'settings_load_error': 'Failed to load settings',
+        
+        // Log messages
+        'log_attempting_cors_setup': 'Attempting to setup CORS rules...',
+        'log_cors_setup_success': 'CORS rules setup successfully',
+        'log_cors_setup_unknown': 'CORS setup completed with unknown status',
+        'log_chrome_runtime_not_available': 'Chrome runtime not available, skipping CORS setup',
+        'log_cors_setup_warning': 'CORS setup warning (non-fatal)',
+        'log_cors_setup_failed': 'CORS rules setup failed (non-fatal)',
+        'log_sending_request': 'Sending request to',
+        'log_request_data': 'Request data',
+        'log_response_status': 'Response status',
+        'log_response_headers': 'Response headers',
+        'log_error_response': 'Error response',
+        'log_fetch_error': 'Fetch error',
+        'log_json_parse_error': 'JSON parse error',
+        'log_json_parse_error_partial': 'JSON parse error for partial line',
         
         // Tooltips
         'tooltip_clear': 'Clear chat history',

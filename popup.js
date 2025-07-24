@@ -331,7 +331,7 @@ class OllamaChat {
           // エラー時の処理
           console.error('Error calling Ollama API:', error);
           if (error.name !== 'AbortError') {
-            this.addMessage(`エラー: ${error.message}`, 'error');
+            this.addMessage(`ERROR: ${error.message}`, 'error');
           }
         }
       );
@@ -475,7 +475,7 @@ class OllamaChat {
         templateSelect.appendChild(option);
       });
     } catch (error) {
-      console.error('テンプレート読み込みエラー:', error);
+      console.error('Faild to read template:', error);
     }
   }
 
@@ -497,7 +497,7 @@ class OllamaChat {
         }
       }
     } catch (error) {
-      console.error('テンプレート適用エラー:', error);
+      console.error('Failed to set template:', error);
     }
   }
 }

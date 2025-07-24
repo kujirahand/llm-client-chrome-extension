@@ -4,6 +4,14 @@ class LLMApi {
     this.model = '';
     this.systemPrompt = '';
     this.abortController = null;
+    
+    // ローカライズ用のインスタンスを取得
+    this.locale = (typeof locale !== 'undefined') ? locale : null;
+  }
+  
+  // ローカライズされたテキストを取得
+  t(key, defaultText = null) {
+    return this.locale ? this.locale.t(key, defaultText) : (defaultText || key);
   }
   
   // 設定を読み込み
@@ -19,7 +27,7 @@ class LLMApi {
     try {
       // chrome.runtime.sendMessageが利用可能かチェック
       if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.sendMessage) {
-        console.log('Attempting to setup CORS rules...');
+        console.log(this.t('log_attempting_cors_setup', 'Attempting to setup CORS rules...'));
         
         // シンプルな同期的アプローチを試行
         chrome.runtime.sendMessage({
@@ -27,19 +35,19 @@ class LLMApi {
           host: this.ollamaUrl
         }, (response) => {
           if (chrome.runtime.lastError) {
-            console.warn('CORS setup warning (non-fatal):', chrome.runtime.lastError.message);
+            console.warn(this.t('log_cors_setup_warning', 'CORS setup warning (non-fatal)') + ':', chrome.runtime.lastError.message);
           } else if (response && response.success) {
-            console.log('CORS rules setup successfully');
+            console.log(this.t('log_cors_setup_success', 'CORS rules setup successfully'));
           } else {
-            console.warn('CORS setup completed with unknown status');
+            console.warn(this.t('log_cors_setup_unknown', 'CORS setup completed with unknown status'));
           }
         });
       } else {
-        console.log('Chrome runtime not available, skipping CORS setup');
+        console.log(this.t('log_chrome_runtime_not_available', 'Chrome runtime not available, skipping CORS setup'));
       }
     } catch (error) {
       // CORSセットアップの失敗は致命的ではない
-      console.warn('CORS rules setup failed (non-fatal):', error.message);
+      console.warn(this.t('log_cors_setup_failed', 'CORS rules setup failed (non-fatal)') + ':', error.message);
     }
   }
   
@@ -87,8 +95,8 @@ class LLMApi {
       stream: true
     };
     
-    console.log('Sending request to:', `${this.ollamaUrl}/api/generate`);
-    console.log('Request data:', requestData);
+    console.log(this.t('log_sending_request', 'Sending request to') + ':', `${this.ollamaUrl}/api/generate`);
+    console.log(this.t('log_request_data', 'Request data') + ':', requestData);
     
     try {
       const response = await fetch(`${this.ollamaUrl}/api/generate`, {
@@ -100,21 +108,21 @@ class LLMApi {
         signal: this.abortController.signal
       });
       
-      console.log('Response status:', response.status);
-      console.log('Response headers:', response.headers);
+      console.log(this.t('log_response_status', 'Response status') + ':', response.status);
+      console.log(this.t('log_response_headers', 'Response headers') + ':', response.headers);
       
       if (!response.ok) {
         const errorText = await response.text();
-        console.error('Error response:', errorText);
+        console.error(this.t('log_error_response', 'Error response') + ':', errorText);
         throw new Error(`HTTP ${response.status}: ${response.statusText}. ${errorText}`);
       }
       
       await this.streamResponse(response, onChunk, onComplete);
       
     } catch (error) {
-      console.error('Fetch error:', error);
+      console.error(this.t('log_fetch_error', 'Fetch error') + ':', error);
       if (error.name === 'TypeError' && error.message.includes('fetch')) {
-        const errorMessage = 'Ollamaサーバーに接続できません。サーバーが起動していることとCORS設定を確認してください。';
+        const errorMessage = this.t('error_ollama_connection', 'Ollamaサーバーに接続できません。サーバーが起動していることとCORS設定を確認してください。');
         onError(new Error(errorMessage));
       } else {
         onError(error);
@@ -154,7 +162,7 @@ class LLMApi {
             return;
           }
         } catch (e) {
-          console.error('JSON parse error:', e, 'Line:', line);
+          console.error(this.t('log_json_parse_error', 'JSON parse error') + ':', e, 'Line:', line);
         }
       }
     }
@@ -168,7 +176,7 @@ class LLMApi {
           onChunk(fullResponse);
         }
       } catch (e) {
-        console.error('JSON parse error for partial line:', e);
+        console.error(this.t('log_json_parse_error_partial', 'JSON parse error for partial line') + ':', e);
       }
     }
     
