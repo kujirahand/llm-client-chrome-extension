@@ -1,4 +1,4 @@
-# Ollama Chat Chrome Extension
+# Ollama Client for Chrome Extension
 
 A Chrome extension that allows you to chat with Ollama API directly from your browser.
 
