@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body {
+      width: 400px;
+      height: 500px;
+      margin: 0;
+      padding: 16px;
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .header h2 {
+      margin: 0;
+      flex: 1;
+    }
+    
+    .header-buttons {
+      display: flex;
+      gap: 8px;
+    }
+    
+    .settings-btn {
+      background: none;
+      border: none;
+      font-size: 18px;
+      cursor: pointer;
+      padding: 4px;
+      border-radius: 4px;
+    }
+    
+    .settings-btn:hover {
+      background-color: #e9ecef;
+    }
+    
+    .settings-panel {
+      background-color: white;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 10px;
+    }
+    
+    .setting-group {
+      margin-bottom: 12px;
+    }
+    
+    .setting-group label {
+      display: block;
+      margin-bottom: 4px;
+      font-weight: bold;
+      font-size: 12px;
+    }
+    
+    .setting-group input,
+    .setting-group select,
+    .setting-group textarea {
+      width: 100%;
+      padding: 6px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 12px;
+      box-sizing: border-box;
+    }
+    
+    .setting-group textarea {
+      height: 60px;
+      resize: vertical;
+    }
+    
+    .setting-actions {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+    
+    .setting-actions button {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+    
+    .small-btn {
+      padding: 4px 8px;
+      margin-left: 4px;
+      background-color: #6c757d;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+    
+    .chat-container {
+      height: 350px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 10px;
+      background-color: white;
+      overflow-y: auto;
+      margin-bottom: 10px;
+    }
+    
+    .message {
+      margin-bottom: 10px;
+      padding: 8px;
+      border-radius: 6px;
+    }
+    
+    .user-message {
+      background-color: #007bff;
+      color: white;
+      text-align: right;
+      margin-left: 20%;
+    }
+    
+    .bot-message {
+      background-color: #e9ecef;
+      color: #333;
+      margin-right: 20%;
+    }
+    
+    .input-container {
+      display: flex;
+      gap: 8px;
+    }
+    
+    #messageInput {
+      flex: 1;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+    
+    #sendButton {
+      padding: 8px 16px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    
+    #sendButton:hover {
+      background-color: #0056b3;
+    }
+    
+    #sendButton:disabled {
+      background-color: #6c757d;
+      cursor: not-allowed;
+    }
+    
+    .loading {
+      text-align: center;
+      color: #666;
+      font-style: italic;
+    }
+    
+    .error {
+      color: #dc3545;
+      background-color: #f8d7da;
+      border: 1px solid #f5c6cb;
+      border-radius: 4px;
+      padding: 8px;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h2 data-locale="app_title">🦙 Ollama Chat</h2>
+    <div class="header-buttons">
+      <button id="clearButton" class="settings-btn" data-locale="clear_chat" data-locale-attr="title" title="Clear chat history">📝</button>
+      <button id="openWindowButton" class="settings-btn" data-locale="tooltip_window" data-locale-attr="title" title="Open in new window">🗗</button>
+      <button id="settingsButton" class="settings-btn" data-locale="tooltip_settings" data-locale-attr="title" title="Settings">⚙️</button>
+    </div>
+  </div>
+  
+  <div id="settingsPanel" class="settings-panel" style="display: none;">
+    <div class="setting-group">
+      <label for="hostInput" data-locale="ollama_host">Ollama Host:</label>
+      <input type="text" id="hostInput" data-locale="host_placeholder" data-locale-attr="placeholder" placeholder="http://localhost:11434" />
+    </div>
+    <div class="setting-group">
+      <label for="modelSelect" data-locale="model">Model:</label>
+      <select id="modelSelect">
+        <option value="gemma3:4b">gemma3:4b</option>
+      </select>
+      <button id="refreshModels" class="small-btn" data-locale="tooltip_refresh_models" data-locale-attr="title" title="Refresh model list">↻</button>
+    </div>
+    <div class="setting-group">
+      <label for="systemPromptInput" data-locale="system_prompt">System Prompt:</label>
+      <textarea id="systemPromptInput" data-locale="system_prompt_placeholder" data-locale-attr="placeholder" placeholder="あなたは親切なAIアシスタントです。"></textarea>
+    </div>
+    <div class="setting-group">
+      <label for="languageSelect">Language:</label>
+      <select id="languageSelect">
+        <option value="ja">日本語</option>
+        <option value="en">English</option>
+      </select>
+    </div>
+    <div class="setting-actions">
+      <button id="saveSettings" data-locale="save">保存</button>
+      <button id="closeSettings" data-locale="close">閉じる</button>
+    </div>
+  </div>
+  
+  <div id="chatContainer" class="chat-container" data-locale="aria_chat_container" data-locale-attr="aria-label" aria-label="Chat messages list">
+    <div class="message bot-message" data-locale="initial_message">
+      こんにちは！何でもお聞きください。
+    </div>
+  </div>
+  
+  <div class="input-container">
+    <input type="text" id="messageInput" data-locale="message_placeholder" data-locale-attr="placeholder" placeholder="メッセージを入力してください..." data-locale="aria_message_input" data-locale-attr="aria-label" aria-label="Message input field" />
+    <button id="sendButton" data-locale="send" data-locale="aria_send_button" data-locale-attr="aria-label" aria-label="Send message button">送信</button>
+  </div>
+  
+  <script src="locale.js"></script>
+  <script src="llm_api.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>
