@@ -143,6 +143,11 @@
       border: 1px solid #ddd;
       border-radius: 4px;
       font-size: 14px;
+      resize: none;
+      min-height: 20px;
+      max-height: 100px;
+      overflow-y: auto;
+      font-family: Arial, sans-serif;
     }
     
     #sendButton {
@@ -178,15 +183,28 @@
       padding: 8px;
       margin-bottom: 10px;
     }
+    
+    .toolsDiv {
+      border-top: 1px solid #ddd;
+      padding-top: 12px;
+      margin-top: 12px;
+    }
+    
+    #saveSettings {
+      background-color: #007bff;
+      color: white;
+    }
+    
+    #saveSettings:hover {
+      background-color: #0056b3;
+    }
   </style>
 </head>
 <body>
   <div class="header">
-    <h2 data-locale="app_title">🦙 Ollama Chat</h2>
+    <h2 data-locale="app_title">🦙Ollama Client</h2>
     <div class="header-buttons">
-      <button id="logsButton" class="settings-btn" data-locale="tooltip_logs" data-locale-attr="title" title="チャットログ">📜</button>
-      <button id="templateButton" class="settings-btn" data-locale="tooltip_templates" data-locale-attr="title" title="テンプレート管理">📋</button>
-      <button id="clearButton" class="settings-btn" data-locale="clear_chat" data-locale-attr="title" title="Clear chat history">📝</button>
+      <button id="clearButton" class="settings-btn" data-locale="tooltip_clear" data-locale-attr="title" title="Clear chat history">📝</button>
       <button id="openWindowButton" class="settings-btn" data-locale="tooltip_window" data-locale-attr="title" title="Open in new window">🗗</button>
       <button id="settingsButton" class="settings-btn" data-locale="tooltip_settings" data-locale-attr="title" title="Settings">⚙️</button>
     </div>
@@ -225,6 +243,10 @@
       <button id="saveSettings" data-locale="save">保存</button>
       <button id="closeSettings" data-locale="close">閉じる</button>
     </div>
+    <div class="toolsDiv">
+      <button id="logsButton" class="settings-btn" data-locale="tooltip_logs" title="チャットログ" data-locale-attr="title">📜</button>
+      <button id="templateButton" class="settings-btn" data-locale="tooltip_templates" title="テンプレート管理" data-locale-attr="title">📋</button>
+    </div>
   </div>
   
   <div id="chatContainer" class="chat-container" data-locale="aria_chat_container" data-locale-attr="aria-label" aria-label="Chat messages list">
@@ -234,9 +256,10 @@
   </div>
   
   <div class="input-container">
-    <input type="text" id="messageInput" data-locale="message_placeholder" data-locale-attr="placeholder" placeholder="メッセージを入力してください..." data-locale="aria_message_input" data-locale-attr="aria-label" aria-label="Message input field" />
+    <textarea id="messageInput" data-locale="message_placeholder" data-locale-attr="placeholder" placeholder="メッセージを入力してください..." data-locale="aria_message_input" data-locale-attr="aria-label" aria-label="Message input field" rows="1"></textarea>
     <button id="sendButton" data-locale="send" data-locale="aria_send_button" data-locale-attr="aria-label" aria-label="Send message button">送信</button>
   </div>
+  <div id="thisIsPopupHTML" style="display: none;"></div>
   
   <script src="locale.js"></script>
   <script src="llm_api.js"></script>

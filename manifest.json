@@ -31,6 +31,13 @@
   "background": {
     "service_worker": "background.js"
   },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_end"
+    }
+  ],
   "web_accessible_resources": [{
     "resources": ["index.html", "locale.js", "llm_api.js", "popup.js", "template.html", "template.js"],
     "matches": ["<all_urls>"]

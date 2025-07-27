@@ -1,5 +1,8 @@
 class OllamaChat {
   constructor() {
+    // コンテキスト判定を最初に行う
+    this.context = this.detectContext();
+    
     this.chatContainer = document.getElementById('chatContainer');
     // messageInput（popup.html用）とmessageText（index.html用）の両方をチェック
     this.messageInput = document.getElementById('messageInput') || document.getElementById('messageText');
@@ -30,6 +33,32 @@ class OllamaChat {
     setTimeout(() => {
       this.messageInput.focus();
     }, 100);
+    
+    // `popup.html`から読み込まれた時だけ、insertSelectedTextを実行
+    // 選択されたテキストを取得してメッセージ入力欄に挿入
+    console.log(`Context detected: ${this.context}`);
+    if (this.context === 'popup') {
+      this.insertSelectedText();
+    }
+  }
+  
+  // コンテキスト判定メソッド
+  detectContext() {
+    // 方法1: 特定のDOM要素の存在確認
+    if (document.getElementById('thisIsPopupHTML')) {
+      return 'popup'; // popup.htmlにのみ存在
+    }
+ 
+    return 'index'; // デフォルトはindex
+  }
+  
+  // コンテキスト判定のヘルパーメソッド
+  isPopupContext() {
+    return this.context === 'popup';
+  }
+  
+  isIndexContext() {
+    return this.context === 'index';
   }
   
   initializeExistingMessages() {
@@ -264,6 +293,48 @@ class OllamaChat {
     
     this.llmApi.saveSettings(ollamaUrl, model, systemPrompt);
     this.closeSettings();
+  }
+  
+  async insertSelectedText() {
+    try {
+      // アクティブなタブから選択されたテキストを取得
+      const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+      
+      if (tab && tab.id) {
+        chrome.tabs.sendMessage(tab.id, { action: 'getSelectedText' }, (response) => {
+          if (chrome.runtime.lastError) {
+            // Content scriptが読み込まれていない場合やエラーが発生した場合
+            console.log('Could not get selected text:', chrome.runtime.lastError.message);
+            return;
+          }
+          
+          if (response && response.selectedText && response.selectedText.trim()) {
+            // 選択されたテキストがある場合、メッセージ入力欄に挿入
+            const selectedText = response.selectedText.trim();
+            if (this.messageInput) {
+              // 既存のテキストがある場合は改行を追加
+              const currentText = this.messageInput.value.trim();
+              if (currentText) {
+                this.messageInput.value = currentText + '\n\n' + selectedText;
+              } else {
+                this.messageInput.value = selectedText;
+              }
+              
+              // textareaの場合は高さを自動調整
+              if (this.messageInput.tagName === 'TEXTAREA') {
+                this.autoResizeTextarea();
+              }
+              
+              // カーソルを末尾に移動
+              this.messageInput.setSelectionRange(this.messageInput.value.length, this.messageInput.value.length);
+              this.messageInput.focus();
+            }
+          }
+        });
+      }
+    } catch (error) {
+      console.error('Error getting selected text:', error);
+    }
   }
   
   clearChat() {

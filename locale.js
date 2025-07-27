@@ -9,7 +9,7 @@ class Locale {
     this.translations = {
       'ja': {
         // ヘッダー
-        'app_title': 'Ollama Client',
+        'app_title': '🦙 Ollama Client',
         'full_window_title': 'Ollama Client - Full Window',
         
         // ボタン
@@ -99,7 +99,7 @@ class Locale {
       
       'en': {
         // Header
-        'app_title': 'Ollama Client',
+        'app_title': '🦙 Ollama Client',
         'full_window_title': 'Ollama Client - Full Window',
         
         // Buttons
@@ -334,7 +334,6 @@ class Locale {
    */
   translatePage() {
     const elements = document.querySelectorAll('[data-locale]');
-    
     elements.forEach(element => {
       const key = element.getAttribute('data-locale');
       const attribute = element.getAttribute('data-locale-attr') || 'textContent';
@@ -349,8 +348,10 @@ const locale = new Locale();
 // ページ読み込み時に言語設定を適用
 if (typeof document !== 'undefined') {
   document.addEventListener('DOMContentLoaded', async () => {
+    console.log('@Locale');
     await locale.loadLanguagePreference();
     locale.translatePage();
+    console.log('@Locale:done');
   });
   
   // 言語変更イベントリスナー
