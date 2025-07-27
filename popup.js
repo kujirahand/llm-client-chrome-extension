@@ -292,7 +292,13 @@ class OllamaChat {
       return;
     }
     
-    const ollamaUrl = hostInput.value;
+    // Ollama Hostが空の場合はデフォルト値を設定
+    let ollamaUrl = hostInput.value.trim();
+    if (!ollamaUrl) {
+      ollamaUrl = 'http://localhost:11434';
+      hostInput.value = ollamaUrl; // UIも更新
+    }
+    
     const model = modelSelect.value;
     const systemPrompt = systemPromptInput.value;
     
@@ -642,6 +648,12 @@ class OllamaChat {
         option.textContent = template.title;
         templateSelect.appendChild(option);
       });
+      
+      // 「テンプレートを編集」オプションを追加
+      const editOption = document.createElement('option');
+      editOption.value = 'edit_templates';
+      editOption.textContent = typeof locale !== 'undefined' ? locale.t('template_edit') : 'テンプレートを編集';
+      templateSelect.appendChild(editOption);
     } catch (error) {
       console.error('Faild to read template:', error);
     }
@@ -650,6 +662,17 @@ class OllamaChat {
   // 選択されたテンプレートを適用
   applyTemplate(templateId) {
     if (!templateId) return;
+
+    // 「テンプレートを編集」が選択された場合
+    if (templateId === 'edit_templates') {
+      this.openTemplateManager();
+      // 選択をリセット
+      const templateSelect = document.getElementById('templateSelect');
+      if (templateSelect) {
+        templateSelect.value = '';
+      }
+      return;
+    }
 
     try {
       const templates = JSON.parse(localStorage.getItem('prompt_templates') || '[]');

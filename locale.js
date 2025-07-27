@@ -78,6 +78,7 @@ class Locale {
         'templates': 'テンプレート',
         'template_select': 'テンプレート選択:',
         'template_select_placeholder': '-- テンプレートを選択 --',
+        'template_edit': '📝 テンプレートを編集',
         
         // Chat Logs
         'logs': 'ログ',
@@ -169,6 +170,7 @@ class Locale {
         'templates': 'Templates',
         'template_select': 'Template Selection:',
         'template_select_placeholder': '-- Select Template --',
+        'template_edit': '📝 Edit Templates',
         
         // Chat Logs
         'logs': 'Logs',
