@@ -169,7 +169,7 @@ class OllamaChat {
     }
   }
   
-  toggleSettings() {
+  async toggleSettings() {
     const panel = document.getElementById('settingsPanel');
     const overlay = document.getElementById('settingsOverlay');
     
@@ -181,8 +181,9 @@ class OllamaChat {
         overlay.style.display = isVisible ? 'none' : 'block';
       }
       
-      // 設定パネルを開く際にテンプレート一覧を更新
+      // 設定パネルを開く際に設定を読み込み
       if (!isVisible) {
+        await this.loadSettingsToUI();
         this.loadTemplateOptions();
       }
     }
@@ -230,6 +231,9 @@ class OllamaChat {
   async changeLanguage(lang) {
     if (typeof locale !== 'undefined') {
       await locale.switchLanguage(lang);
+      // 言語変更後に即座にUIを更新
+      this.updateInitialMessage();
+      this.updateLoadingText();
     }
   }
   
@@ -277,10 +281,11 @@ class OllamaChat {
     }
   }
   
-  saveSettings() {
+  async saveSettings() {
     const hostInput = document.getElementById('hostInput');
     const modelSelect = document.getElementById('modelSelect');
     const systemPromptInput = document.getElementById('systemPromptInput');
+    const languageSelect = document.getElementById('languageSelect');
     
     if (!hostInput || !modelSelect || !systemPromptInput) {
       console.error('Settings elements not found');
@@ -290,6 +295,11 @@ class OllamaChat {
     const ollamaUrl = hostInput.value;
     const model = modelSelect.value;
     const systemPrompt = systemPromptInput.value;
+    
+    // 言語設定を保存
+    if (languageSelect && typeof locale !== 'undefined') {
+      await locale.saveLanguagePreference(languageSelect.value);
+    }
     
     this.llmApi.saveSettings(ollamaUrl, model, systemPrompt);
     this.closeSettings();

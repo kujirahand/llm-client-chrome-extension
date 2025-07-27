@@ -25,6 +25,7 @@ class Locale {
         'ollama_host': 'Ollama Host:',
         'model': 'Model:',
         'system_prompt': 'System Prompt:',
+        'language_label': '言語:',
         'host_placeholder': 'http://localhost:11434',
         'system_prompt_placeholder': 'あなたは親切なAIアシスタントです。',
         
@@ -115,6 +116,7 @@ class Locale {
         'ollama_host': 'Ollama Host:',
         'model': 'Model:',
         'system_prompt': 'System Prompt:',
+        'language_label': 'Language:',
         'host_placeholder': 'http://localhost:11434',
         'system_prompt_placeholder': 'You are a helpful AI assistant.',
         
