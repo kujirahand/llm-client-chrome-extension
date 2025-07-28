@@ -13,7 +13,14 @@ A Chrome extension that allows you to chat with Ollama API directly from your br
 - Chat history preservation
 - **Multilingual support**: Japanese and English UI
 
-## Setup
+## Install
+
+You can install from the Chrome Web Store:
+
+- [Chrome Web Store - Ollama Client for Chrome Extension](https://chromewebstore.google.com/detail/ollama-client-for-chrome/ljcbjbmcombnkhbehohhhjoogkgcnffc?hl=ja)
+
+
+## Local Setup
 
 ### 1. Install and Start Ollama
 
