@@ -11,6 +11,7 @@ A Chrome extension that allows you to chat with Ollama API directly from your br
 - **Automatic CORS handling**: Resolves connection issues using Chrome extension permissions
 - Simple chat interface
 - Chat history preservation
+- When you launch the extension with text selected on a web page, the selected text will be inserted into the chat input.
 - **Multilingual support**: Japanese and English UI
 
 ## Install
