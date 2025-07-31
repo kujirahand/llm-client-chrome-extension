@@ -263,8 +263,9 @@ class OllamaChat {
     }
     
     try {
+      // fetch models
       const models = await this.llmApi.fetchModels();
-      
+      models.sort((a, b) => a.name.localeCompare(b.name)); // 名前でソート
       modelSelect.innerHTML = '';
       
       models.forEach(model => {
